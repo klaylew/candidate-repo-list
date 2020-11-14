@@ -1,70 +1,39 @@
 'use strict';
+console.log("started up");
+// Github searchURL = 'https://api.github.com/users/{username}/repos';
 
-const apiKey = "7c5cc406c7mshd99e765d1873ebfp1af92ejsn60779c5bda88";
+//display list of repos
+function displayResults(username){  
+  const html = 'https://api.github.com/users/'+username+'/repos';
 
-const searchURL = 'https://contextualwebsearch-websearch-v1.p.rapidapi.com/api/search/NewsSearchAPI';
-
-
-function formatQueryParams(params) {
-  const queryItems = Object.keys(params)
-    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
-  return queryItems.join('&');
-}
-
-function displayResults(responseJson, maxResults) {
-  // if there are previous results, remove them
-  console.log(responseJson);
-  $('#results-list').empty();
-  // iterate through the articles array, stopping at the max number of results
-  for (let i = 0; i < responseJson.value.length & i<maxResults ; i++){
-    // for each video object in the articles
-    //array, add a list item to the results 
-    //list with the article title, source, author,
-    //description, and image
-    $('#results-list').append(
-      `<li><h3><a href="${responseJson.value[i].url}">${responseJson.value[i].title}</a></h3>
-      <p>${responseJson.value[i].description}</p>
-      <p>By ${responseJson.value[i].body}</p>
-      </li>`
-    )};
-  //display the results section  
-  $('#results').removeClass('hidden');
-};
-
-function getNews(query, maxResults=10) {
-  const params = {
-    q: query,
-    pageSize: maxResults
-  };
-  const queryString = formatQueryParams(params)
-  const url = searchURL + '?' + queryString;
-
-  console.log(url);
-
-  const options = {
-    headers: new Headers({
-      "x-rapidapi-key": apiKey})
-  };
-
-  fetch(url, options)
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error(response.statusText);
+  fetch(html)
+    .then(res => res.json())
+    .then(resJson => {
+      let output = "";
+      resJson.forEach(function(repo){
+        // console.log(repo);
+        output += 
+        `
+        <div class=item>
+        <h2>${repo.name}</h2>
+        <a href="${repo.html_url}">${repo.html_url}</a>
+        </div>    
+        `;
+      });
+      document.getElementById('results-list').innerHTML = output;
+        $('#results').removeClass('hidden');
     })
-    .then(responseJson => displayResults(responseJson, maxResults))
-    .catch(err => {
-      $('#js-error-message').text(`Something went wrong: ${err.message}`);
-    });
+    .catch(error => alert('Something went wrong. Try again later.'));
 }
+//assign value for html query for fetch function
 
+
+//watch for form submission
 function watchForm() {
   $('form').submit(event => {
     event.preventDefault();
-    const searchTerm = $('#js-search-term').val();
-    const maxResults = $('#js-max-results').val();
-    getNews(searchTerm, maxResults);
+    let usernameQuery = $('#js-search-term').val();
+    displayResults(usernameQuery);
   });
 }
 
