@@ -14,8 +14,8 @@ button:hover {
   cursor: pointer;
 }
 
-ul {
-  list-style: none;
+ol {
+  list-style: armenian;
   padding: 0;
   margin: 0;
 }
@@ -39,4 +39,12 @@ li, img {
 
 .hidden {
   display: none;
+}
+
+.item {
+  margin-top: 75px;
+}
+
+a {
+  margin-left: 100px;
 }
